@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reserva extends Model
 {
+    protected $table = 'reserva';
+
     protected $fillable = [
-        'sku', 'quantity', 'data_add', 'data_upd'
+        'sku', 'quantity'
     ];
 
     public static $rules = [
         'sku' => 'required|string|exists:produto,sku',
-        'client' => 'required|max:120',
         'quantity' => 'required|numeric'
     ];
 

@@ -33,7 +33,7 @@ class ProdutoTest extends TestCase
     {
         $produto = Produto::all();
         
-        $response = $this->call('PUT', sprintf('/produto/%d', $produto->first()->id), ['client' => 'LojaTeste2', 'sku' => 'teste_123', 'quantity' => '15']);
+        $response = $this->call('PUT', sprintf('/produto/%d', $produto->first()->id), ['client' => 'LojaTeste2', 'quantity' => '15']);
 
         return $this->assertEquals(200, $response->status());
     }

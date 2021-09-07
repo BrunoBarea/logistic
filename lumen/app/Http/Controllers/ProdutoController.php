@@ -22,21 +22,24 @@ class ProdutoController extends Controller
     public function importarProdutos()
     { 
         $novos = 0;
+        $atualizados = 0;
         if (($handle = fopen("/var/www/html/app/Arquivos/produtos.csv", "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
 
                 if(in_array('quantity', $data))
                     continue;
 
-                $produto = Produto::find(['sku' => $data[1]])->first();
-                
-                if($produto === NULL) {
+                $produto = Produto::firstOrNew(['sku' => $data[1]]);
+               
+                if($produto->id === NULL) {
                     $novos++;
                     
                     $produto = new Produto();
 
                     $produto->sku = $data[1];
                     $produto->client = $data[0];
+                } else {
+                    $atualizados++;
                 }
 
                 $produto->quantity = $data[2];
@@ -45,6 +48,15 @@ class ProdutoController extends Controller
                 
             }
             fclose($handle);
+        }
+
+        if($atualizados > 0) {
+            return response()->json(
+                [
+                    201 => sprintf("%s novos produtos adicionados", $novos),
+                    200 => sprintf("%s produtos com estoque atualizado", $atualizados),
+                ]
+            , 207);
         }
 
         return response()->json([sprintf("%s novos produtos adicionados", $novos)], 201);
@@ -58,11 +70,14 @@ class ProdutoController extends Controller
 
     public function show($id)
     {
-        $produto = Produto::find($id);
+        $produto = Produto::firstWhere('id', $id);
+        
+        if(!$produto)
+            $produto = Produto::where('sku', $id)->first();
 
-        if(!$produto) 
+        if(!$produto)
             return response()->json([], 204);
-
+        
         return response()->json($produto, 200);
     }
 
@@ -98,7 +113,10 @@ class ProdutoController extends Controller
             'quantity' => 'integer'
         ]);
 
-        $produto = Produto::find($id);
+        $produto = Produto::firstWhere('id', $id);
+
+        if(!$produto)
+            $produto = Produto::where('sku', $id)->first();
 
         if(!$produto) 
             return response()->json([], 204);
@@ -114,7 +132,10 @@ class ProdutoController extends Controller
 
     public function delete($id)
     {
-        $produto = Produto::find($id);
+        $produto = Produto::firstWhere('id', $id);
+
+        if(!$produto)
+            $produto = Produto::where('sku', $id)->first();
 
         /**
          * Caso o produto informado não exista, verifica e retorna 204 para
@@ -128,7 +149,7 @@ class ProdutoController extends Controller
 
         $produto->delete();
 
-        return response()->json(['Product %s removed!'], 200);
+        return response()->json([sprintf('Produto %s removido!', $id)], 200);
     }
 
     /**
@@ -141,7 +162,10 @@ class ProdutoController extends Controller
             'quantity' => 'required|integer'
         ]);
 
-        $produto = Produto::find($id);
+        $produto = Produto::firstWhere('id', $id);
+
+        if(!$produto)
+            $produto = Produto::where('sku', $id)->first();
         
         if(!$produto) 
             return response()->json([], 204);
@@ -160,7 +184,10 @@ class ProdutoController extends Controller
             'quantity' => 'required|integer'
         ]);
 
-        $produto = Produto::find($id);
+        $produto = Produto::firstWhere('id', $id);
+
+        if(!$produto)
+            $produto = Produto::where('sku', $id)->first();
 
         if(!$produto) 
             return response()->json([], 204);
@@ -179,7 +206,10 @@ class ProdutoController extends Controller
             'quantity' => 'required|integer'
         ]);
 
-        $produto = Produto::find($id);
+        $produto = Produto::firstWhere('id', $id);
+
+        if(!$produto)
+            $produto = Produto::where('sku', $id)->first();
         
         if(!$produto) 
             return response()->json([], 204);
