@@ -23,4 +23,7 @@ $router->group(['prefix' => 'produto'], function () use ($router) {
     $router->post('/', 'ProdutoController@insert');
     $router->put('/{id}', 'ProdutoController@update');
     $router->delete('/{id}', 'ProdutoController@delete');
+    $router->patch('/{id}', 'ProdutoController@alteraQuantity');
+    $router->patch('/adicionar/{id}', 'ProdutoController@adicionarQuantity');
+    $router->patch('/remover/{id}', 'ProdutoController@removerQuantity');
 });
