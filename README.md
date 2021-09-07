@@ -1,4 +1,4 @@
-# logistic
+# Logistic - NÃO FINALIZADO (AINDA) FALTA A PARTE DE RESERVA DE ESTOQUE
 Olá. Seja bem vindo ao meu projeto para o teste da Lynx.
 
 Para fazer o sistema funcionar navegue até a pasta do projeto e execute o comando:
