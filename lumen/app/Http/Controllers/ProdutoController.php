@@ -9,6 +9,47 @@ use Illuminate\Http\Request;
 class ProdutoController extends Controller
 {
 
+    /**
+     * Código para importação dos produtos. Considerando que o arquivo já está no sistema.
+     * Fiz uma importação simples que é chamada por uma rota. Apenas a leitura do CSV, ignorando a primeira
+     * linha que é o cabeçalho. Busca o produto pelo código SKU e caso exista atualiza o estoque, se não existir
+     * cadastra. Para a resposta, retorno a quantidade de linhas que foram inseridas.
+     * 
+     * Aqui poderia trabalhar com o código 207 para informar quantos foram inseridos e quantos tiveram seus estoques
+     * atualizados. Depende da necessidade desse retorno.
+     * 
+     */
+    public function importarProdutos()
+    { 
+        $novos = 0;
+        if (($handle = fopen("/var/www/html/app/Arquivos/produtos.csv", "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+
+                if(in_array('quantity', $data))
+                    continue;
+
+                $produto = Produto::find(['sku' => $data[1]])->first();
+                
+                if($produto === NULL) {
+                    $novos++;
+                    
+                    $produto = new Produto();
+
+                    $produto->sku = $data[1];
+                    $produto->client = $data[0];
+                }
+
+                $produto->quantity = $data[2];
+
+                $produto->save();
+                
+            }
+            fclose($handle);
+        }
+
+        return response()->json([sprintf("%s novos produtos adicionados", $novos)], 201);
+    }
+
     public function index()
     {
         $produtos = Produto::all();

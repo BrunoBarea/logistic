@@ -18,6 +18,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'produto'], function () use ($router) {
+    $router->get('/importar-produtos', 'ProdutoController@importarProdutos');
     $router->get('/', 'ProdutoController@index');
     $router->get('/{id}', 'ProdutoController@show');
     $router->post('/', 'ProdutoController@insert');
